@@ -32,7 +32,7 @@
 #define KEYLAYOUTS_H__
 
 #include <stdint.h>
-#include <avr/pgmspace.h>
+#include <pgmspace.h>
 
 #ifdef __cplusplus
 extern "C"{
@@ -59,7 +59,7 @@ extern "C"{
 //#define LAYOUT_SPANISH_LATIN_AMERICA
 //#define LAYOUT_SWEDISH
 //#define LAYOUT_TURKISH
-//#define LAYOUT_UNITED_KINGDOM	
+//#define LAYOUT_UNITED_KINGDOM
 //#define LAYOUT_US_INTERNATIONAL
 
 
@@ -238,7 +238,7 @@ extern "C"{
 #define KEYCODE_TYPE		uint8_t
 #define KEYCODE_MASK		0x007F
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_QUOTE + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_3 + SHIFT_MASK			// 35 #
@@ -358,7 +358,7 @@ extern "C"{
 #define DEADKEY_TILDE		KEY_TILDE + SHIFT_MASK
 #define DEADKEY_DIAERESIS	KEY_QUOTE + SHIFT_MASK
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	DIAERESIS_BITS + KEY_SPACE		// 34 "
 #define ASCII_23	KEY_3 + SHIFT_MASK			// 35 #
@@ -574,7 +574,7 @@ extern "C"{
 #define DEADKEY_GRAVE_ACCENT	KEY_EQUAL + SHIFT_MASK
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_2 + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_BACKSLASH				// 35 #		??
@@ -794,7 +794,7 @@ extern "C"{
 #define DEADKEY_TILDE		KEY_N + ALTGR_MASK
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_2 + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_BACKSLASH				// 35 #		??
@@ -1018,7 +1018,7 @@ extern "C"{
 #define DEADKEY_CEDILLA		KEY_RIGHT_BRACE
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_2 + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_TILDE + SHIFT_MASK			// 35 #
@@ -1240,7 +1240,7 @@ extern "C"{
 #define DEADKEY_RING_ABOVE	KEY_LEFT_BRACE + SHIFT_MASK + RCTRL_MASK
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_PERIOD + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_3 + SHIFT_MASK			// 35 #
@@ -1448,7 +1448,7 @@ extern "C"{
 #define KEYCODE_MASK		0x00FF
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_2 + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_BACKSLASH				// 35 #
@@ -1669,7 +1669,7 @@ extern "C"{
 #define DEADKEY_DIAERESIS	KEY_RIGHT_BRACE
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_2 + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_3 + SHIFT_MASK			// 35 #
@@ -1893,7 +1893,7 @@ extern "C"{
 #define DEADKEY_TILDE		KEY_2 + ALTGR_MASK
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_SLASH				// 33 !
 #define ASCII_22	KEY_3					// 34 "
 #define ASCII_23	KEY_3 + ALTGR_MASK			// 35 #
@@ -2115,7 +2115,7 @@ extern "C"{
 #define DEADKEY_DIAERESIS	KEY_RIGHT_BRACE
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_2 + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_3 + SHIFT_MASK			// 35 #
@@ -2338,7 +2338,7 @@ extern "C"{
 #define DEADKEY_DIAERESIS	KEY_RIGHT_BRACE
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_2 + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_3 + SHIFT_MASK			// 35 #
@@ -2562,7 +2562,7 @@ extern "C"{
 #define DEADKEY_DIAERESIS	KEY_RIGHT_BRACE
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_2 + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_3 + SHIFT_MASK			// 35 #
@@ -2786,7 +2786,7 @@ extern "C"{
 #define DEADKEY_DIAERESIS	KEY_QUOTE + SHIFT_MASK
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_2 + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_3 + ALTGR_MASK			// 35 #
@@ -3008,7 +3008,7 @@ extern "C"{
 #define DEADKEY_DIAERESIS	KEY_LEFT_BRACE + SHIFT_MASK
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_2 + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_3 + ALTGR_MASK			// 35 #
@@ -3222,7 +3222,7 @@ extern "C"{
 #define KEYCODE_MASK		0x00FF
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_2 + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_QUOTE + ALTGR_MASK			// 35 #
@@ -3440,7 +3440,7 @@ extern "C"{
 #define DEADKEY_DIAERESIS	KEY_6 + SHIFT_MASK
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_TILDE + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_3 + ALTGR_MASK			// 35 #
@@ -3657,7 +3657,7 @@ extern "C"{
 #define DEADKEY_TILDE		KEY_SLASH + ALTGR_MASK
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_8					// 33 !
 #define ASCII_22	KEY_3					// 34 "
 #define ASCII_23	KEY_3 + ALTGR_MASK			// 35 #
@@ -3878,7 +3878,7 @@ extern "C"{
 #define DEADKEY_TILDE		KEY_EQUAL + ALTGR_MASK
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_RIGHT_BRACE + SHIFT_MASK		// 33 !
 #define ASCII_22	KEY_2 + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_3 + ALTGR_MASK			// 35 #
@@ -4099,7 +4099,7 @@ extern "C"{
 #define DEADKEY_TILDE		KEY_EQUAL + ALTGR_MASK
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_RIGHT_BRACE + SHIFT_MASK		// 33 !
 #define ASCII_22	KEY_2 + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_3 + ALTGR_MASK			// 35 #
@@ -4319,7 +4319,7 @@ extern "C"{
 #define DEADKEY_DIAERESIS	KEY_LEFT_BRACE + SHIFT_MASK
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_2 + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_3 + ALTGR_MASK			// 35 #
@@ -4530,7 +4530,7 @@ extern "C"{
 #define DEADKEY_GRAVE_ACCENT	KEY_TILDE
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_2 + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_BACKSLASH				// 35 #
@@ -4752,7 +4752,7 @@ extern "C"{
 #define DEADKEY_RING_ABOVE	KEY_TILDE
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_2 + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_3 + SHIFT_MASK			// 35 #
@@ -4973,7 +4973,7 @@ extern "C"{
 #define DEADKEY_TILDE		KEY_RIGHT_BRACE + ALTGR_MASK
 #define DEADKEY_DIAERESIS	KEY_LEFT_BRACE + ALTGR_MASK
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_TILDE				// 34 "
 #define ASCII_23	KEY_3 + ALTGR_MASK			// 35 #
@@ -5219,7 +5219,7 @@ extern "C"{
 #define DEADKEY_DIAERESIS	KEY_MINUS + ALTGR_MASK
 #define DEADKEY_CEDILLA		KEY_EQUAL + ALTGR_MASK
 #define KEY_NON_US_100		63
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_QUOTE + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_SEMICOLON + SHIFT_MASK		// 34 "
 #define ASCII_23	KEY_X + ALTGR_MASK			// 35 #
@@ -5470,7 +5470,7 @@ extern "C"{
 //#define DEADKEY_CEDILLA	KEY_EQUAL + ALTGR_MASK <-- TODO: why are there 2 Cedilla deadkeys?
 #define KEY_NON_US_100		63
 
-#define ASCII_20	KEY_SPACE				// 32  
+#define ASCII_20	KEY_SPACE				// 32
 #define ASCII_21	KEY_1 + SHIFT_MASK			// 33 !
 #define ASCII_22	KEY_2 + SHIFT_MASK			// 34 "
 #define ASCII_23	KEY_3 + SHIFT_MASK			// 35 #

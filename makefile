@@ -1,5 +1,7 @@
 # added environemnt variable to set NO_ARDUINO
 export NO_ARDUINO = ''
+SHELL = bash
+
 
 # Teensyduino Core Library
 # http://www.pjrc.com/teensy/
@@ -38,7 +40,7 @@ MCU=MK20DX256
 
 # make it lower case
 LOWER_MCU := $(subst A,a,$(subst B,b,$(subst C,c,$(subst D,d,$(subst E,e,$(subst F,f,$(subst G,g,$(subst H,h,$(subst I,i,$(subst J,j,$(subst K,k,$(subst L,l,$(subst M,m,$(subst N,n,$(subst O,o,$(subst P,p,$(subst Q,q,$(subst R,r,$(subst S,s,$(subst T,t,$(subst U,u,$(subst V,v,$(subst W,w,$(subst X,x,$(subst Y,y,$(subst Z,z,$(MCU)))))))))))))))))))))))))))
-MCU_LD = $(LOWER_MCU).ld
+MCU_LD = lib/boards/$(LOWER_MCU).ld
 
 # The name of your project (used to name the compiled .hex file)
 TARGET = main
@@ -123,9 +125,44 @@ SIZE = $(COMPILERPATH)/arm-none-eabi-size
 
 # automatically create lists of the sources and objects
 # TODO: this does not handle Arduino libraries yet...
-C_FILES := $(wildcard *.c)
-CPP_FILES := $(wildcard *.cpp)
-OBJS := $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o)
+
+SOURCE_DIR			= lib src
+
+C_SRCS				:=	$(foreach dir, $(SOURCE_DIR),						\
+						$(shell test -d $(dir) && find $(dir) -type f -name *.c -printf "%P\n"))
+
+CPP_SRCS			:=	$(foreach dir, $(SOURCE_DIR),						\
+						$(shell test -d $(dir) && find $(dir) -type f -name *.cpp -printf "%P\n"))
+
+
+INCLUDE_DIRS		:=	$(addprefix -I,										\
+						$(sort												\
+						$(foreach dir, $(SOURCE_DIR),	 					\
+						$(shell test -d $(dir) && find $(dir) -type f -name *.h -printf "%h\n"))))
+
+
+
+C_FILES = $(C_SRCS) #$(wildcard *.c)
+CPP_FILES = $(CPP_SRCS)
+OBJS := $(notdir $(C_FILES:.c=.o)) $(notdir $(CPP_FILES:.cpp=.o))
+
+$(info $(OBJS))
+
+DIRS 			:=	$(foreach dir, $(SOURCE_DIR),						\
+                    $(sort $(shell find -L $(dir) -type d)))
+
+# # Set VPATH for source directories
+# EMPTY:=
+# SPACE:= $(EMPTY) $(EMPTY)
+# VPATH = $(subst $(SPACE),:,$(strip $(SOURCE_DIR)))
+
+
+# $(info $(DIRS))
+
+vpath %.c $(DIRS)
+vpath %.cpp $(DIRS)
+vpath %.h $(DIRS)
+vpath %.asm $(DIRS)
 
 
 # the actual makefile rules (all .o files built by GNU make's default implicit rules)
@@ -134,6 +171,12 @@ all: $(TARGET).hex
 
 $(TARGET).elf: $(OBJS) $(MCU_LD)
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
+
+%.o: %.c
+	$(CC) $(INCLUDE_DIRS) $(CPPFLAGS) $(CFLAGS) -c $<
+
+%.o: %.cpp
+	$(CXX) $(INCLUDE_DIRS) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
 %.hex: %.elf
 	$(SIZE) $<
