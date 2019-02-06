@@ -1,193 +1,196 @@
-# added environemnt variable to set NO_ARDUINO
-export NO_ARDUINO = ''
+################################################################################
+
+MAKEFLAGS += -rR						# do not use make's built-in rules and variables
+MAKEFLAGS += -j8						# parallel processing
+MAKEFLAGS += --output-sync=target		# group output messages per target
+MAKEFLAGS += --warn-undefined-variables
+
 SHELL = bash
+ECHO  = echo -e
+RM    = rm -rf
 
-
-# Teensyduino Core Library
-# http://www.pjrc.com/teensy/
-# Copyright (c) 2017 PJRC.COM, LLC.
-#
-# Permission is hereby granted, free of charge, to any person obtaining
-# a copy of this software and associated documentation files (the
-# "Software"), to deal in the Software without restriction, including
-# without limitation the rights to use, copy, modify, merge, publish,
-# distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so, subject to
-# the following conditions:
-#
-# 1. The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
-#
-# 2. If the Software is incorporated into a build system that allows
-# selection among a list of target devices, then similar target
-# devices manufactured by PJRC.COM must be included in the list of
-# target devices and selectable in the same manner.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
-# BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
-# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
-# set your MCU type here, or make command line `make MCU=MK20DX256`
-MCU=MK20DX256
-#MCU=MKL26Z64
-#MCU=MK64FX512
-#MCU=MK66FX1M0
-
-# make it lower case
-LOWER_MCU := $(subst A,a,$(subst B,b,$(subst C,c,$(subst D,d,$(subst E,e,$(subst F,f,$(subst G,g,$(subst H,h,$(subst I,i,$(subst J,j,$(subst K,k,$(subst L,l,$(subst M,m,$(subst N,n,$(subst O,o,$(subst P,p,$(subst Q,q,$(subst R,r,$(subst S,s,$(subst T,t,$(subst U,u,$(subst V,v,$(subst W,w,$(subst X,x,$(subst Y,y,$(subst Z,z,$(MCU)))))))))))))))))))))))))))
-MCU_LD = lib/boards/$(LOWER_MCU).ld
-
-# The name of your project (used to name the compiled .hex file)
-TARGET = main
-
-# Those that specify a NO_ARDUINO environment variable will
-# be able to use this Makefile with no Arduino dependency.
-# Please note that if ARDUINOPATH was set, it will override
-# the NO_ARDUINO behaviour.
-ifndef NO_ARDUINO
-# Path to your arduino installation
-ARDUINOPATH ?= ../../../../..
-endif
-
-# configurable options
-OPTIONS = -DF_CPU=48000000 -DUSB_SERIAL -DLAYOUT_US_ENGLISH -DUSING_MAKEFILE
-
-# options needed by many Arduino libraries to configure for Teensy 3.x
-OPTIONS += -D__$(MCU)__ -DARDUINO=10805 -DTEENSYDUINO=144
-
-# use "cortex-m4" for Teensy 3.x
-# use "cortex-m0plus" for Teensy LC
-CPUARCH = cortex-m4
-#CPUARCH = cortex-m0plus
-
-
-# Other Makefiles and project templates for Teensy 3.x:
-#
-# https://github.com/apmorton/teensy-template
-# https://github.com/xxxajk/Arduino_Makefile_master
-# https://github.com/JonHylands/uCee
-
-
-#************************************************************************
-# Location of Teensyduino utilities, Toolchain, and Arduino Libraries.
-# To use this makefile without Arduino, copy the resources from these
-# locations and edit the pathnames.  The rest of Arduino is not needed.
-#************************************************************************
-
-ifdef ARDUINOPATH
-
-# path location for Teensy Loader, teensy_post_compile and teensy_reboot (on Linux)
-TOOLSPATH = $(abspath $(ARDUINOPATH)/hardware/tools)
-
-# path location for Arduino libraries (currently not used)
-LIBRARYPATH = $(abspath $(ARDUINOPATH)/libraries)
-
-# path location for the arm-none-eabi compiler
-COMPILERPATH = $(abspath $(ARDUINOPATH)/hardware/tools/arm/bin)
-
+ifeq ("$(origin verbose)", "command line")
+	Q =
 else
-# Default to the normal GNU/Linux compiler path if NO_ARDUINO
-# and ARDUINOPATH was not set.
-COMPILERPATH ?= /usr/bin
-
+	Q = @
 endif
 
-#************************************************************************
-# Settings below this point usually do not need to be edited
-#************************************************************************
+################################################################################
 
-# CPPFLAGS = compiler options for C and C++
-CPPFLAGS = -Wall -g -Os -mcpu=$(CPUARCH) -mthumb -MMD $(OPTIONS) -I.
+PROJECT_NAME = test
+# PROJECT_NAME = $(notdir $(CURDIR))
 
-# compiler options for C++ only
-CXXFLAGS = -std=gnu++14 -felide-constructors -fno-exceptions -fno-rtti
+$(info )
+$(info PROJECT=$(PROJECT_NAME))
+$(info )
+
+SOURCE_DIRS = lib src
+OBJECT_DIR  = obj
+OUTPUT_DIR  = out
+
+LINKER_FILE_PATH = lib/linker
+
+SRC_FILE_EXT_C   = .c
+SRC_FILE_EXT_CPP = .cpp
+HDR_FILE_EXT     = .h
+OBJ_FILE_EXT     = .o
+DEP_FILE_EXT     = .d
+ELF_FILE_EXT     = .elf
+MAP_FILE_EXT     = .map
+HEX_FILE_EXT     = .hex
+BIN_FILE_EXT     = .bin
+DIS_FILE_EXT     = .dis
+LINK_FILE_EXT    = .ld
+
+ELF_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME)$(ELF_FILE_EXT)
+MAP_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME)$(MAP_FILE_EXT)
+HEX_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME)$(HEX_FILE_EXT)
+BIN_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME)$(BIN_FILE_EXT)
+DIS_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME)$(DIS_FILE_EXT)
+
+MCU = MK20DX256		# Teensy 3.1/3.2
+# MCU = MKL26Z64	# Teensy LC
+# MCU = MK64FX512	# Teensy 3.5
+# MCU = MK66FX1M0 	# Teensy 3.6
+
+MCU    := $(strip $(MCU))
+MCU_LD  = $(LINKER_FILE_PATH)/$(shell echo $(MCU) | tr A-Z a-z)$(LINK_FILE_EXT)
+
+CPUARCH  = cortex-m4		# Teensy 3.x
+# CPUARCH = cortex-m0plus	# Teensy LC
+CPUARCH := $(strip $(CPUARCH))
+
+################################################################################
+
+CC      = arm-none-eabi-gcc
+CXX     = arm-none-eabi-g++
+OBJCOPY = arm-none-eabi-objcopy
+OBJDUMP = arm-none-eabi-objdump
+SIZE    = arm-none-eabi-size
+
+DEFINES  = -DF_CPU=48000000
+DEFINES += -DUSB_SERIAL
+DEFINES += -DLAYOUT_US_ENGLISH
+DEFINES += -DUSING_MAKEFILE
+DEFINES += -D__$(MCU)__
+DEFINES += -DARDUINO=10805
+DEFINES += -DTEENSYDUINO=144
+
+# common compiler options for C and C++
+CPPFLAGS  = -Wall
+CPPFLAGS += -Werror
+CPPFLAGS += -g
+CPPFLAGS += -Os
+CPPFLAGS += -mcpu=$(CPUARCH)
+CPPFLAGS += -mthumb
+CPPFLAGS += -MMD				# generate dependency file
+CPPFLAGS += -c					# compile and assemble, do not link
+CPPFLAGS += $(DEFINES)
 
 # compiler options for C only
-CFLAGS =
+CFLAGS = -std=c11
 
-# linker options
-LDFLAGS = -Os -Wl,--gc-sections,--defsym=__rtc_localtime=0 --specs=nano.specs -mcpu=$(CPUARCH) -mthumb -T$(MCU_LD)
+# compiler options for C++ only
+CXXFLAGS  = -std=gnu++14
+CXXFLAGS += -felide-constructors
+CXXFLAGS += -fno-exceptions
+CXXFLAGS += -fno-rtti
+
+LDFLAGS  = -Os
+LDFLAGS += -Wl,--gc-sections,--defsym=__rtc_localtime=0,-Map=$(MAP_FILE)
+LDFLAGS += --specs=nano.specs
+LDFLAGS += -mcpu=$(CPUARCH)
+LDFLAGS += -mthumb
+LDFLAGS += -T$(MCU_LD)
 
 # additional libraries to link
 LIBS = -lm
 
+HEX_FLAGS  = -O ihex
+HEX_FLAGS += -R .eeprom
 
-# names for the compiler programs
-CC = $(COMPILERPATH)/arm-none-eabi-gcc
-CXX = $(COMPILERPATH)/arm-none-eabi-g++
-OBJCOPY = $(COMPILERPATH)/arm-none-eabi-objcopy
-SIZE = $(COMPILERPATH)/arm-none-eabi-size
+BIN_FLAGS  = -O binary
+BIN_FLAGS += -R .eeprom
 
-# automatically create lists of the sources and objects
-# TODO: this does not handle Arduino libraries yet...
+DIS_FLAGS  = --all
 
-SOURCE_DIR			= lib src
+################################################################################
 
-C_SRCS				:=	$(foreach dir, $(SOURCE_DIR),						\
-						$(shell test -d $(dir) && find $(dir) -type f -name *.c -printf "%P\n"))
+C_SRCS			:=	$(foreach dir, $(SOURCE_DIRS),		\
+					$(foreach ext, $(SRC_FILE_EXT_C), 	\
+					$(shell test -d $(dir) && find $(dir) -type f -name *$(ext))))
 
-CPP_SRCS			:=	$(foreach dir, $(SOURCE_DIR),						\
-						$(shell test -d $(dir) && find $(dir) -type f -name *.cpp -printf "%P\n"))
+CXX_SRCS		:=	$(foreach dir, $(SOURCE_DIRS),		\
+					$(foreach ext, $(SRC_FILE_EXT_CPP), \
+					$(shell test -d $(dir) && find $(dir) -type f -name *$(ext))))
 
+DIRS 			:=	$(foreach dir, $(SOURCE_DIRS),		\
+					$(sort $(shell find -L $(dir) -type d)))
 
-INCLUDE_DIRS		:=	$(addprefix -I,										\
-						$(sort												\
-						$(foreach dir, $(SOURCE_DIR),	 					\
-						$(shell test -d $(dir) && find $(dir) -type f -name *.h -printf "%h\n"))))
+INCLUDE_DIRS	:=	$(addprefix -I, $(DIRS))
 
+OBJS 			:=	$(addprefix $(OBJECT_DIR)/, 		\
+					$(C_SRCS:.c=.o) $(CXX_SRCS:.cpp=.o))
 
+vpath %$(SRC_FILE_EXT_C)   $(DIRS)
+vpath %$(SRC_FILE_EXT_CPP) $(DIRS)
+vpath %$(HDR_FILE_EXT)     $(DIRS)
 
-C_FILES = $(C_SRCS) #$(wildcard *.c)
-CPP_FILES = $(CPP_SRCS)
-OBJS := $(notdir $(C_FILES:.c=.o)) $(notdir $(CPP_FILES:.cpp=.o))
+################################################################################
 
-$(info $(OBJS))
+.PHONY: all help clean rebuild
+.SECONDARY: $(OBJS)
 
-DIRS 			:=	$(foreach dir, $(SOURCE_DIR),						\
-                    $(sort $(shell find -L $(dir) -type d)))
+all: $(ELF_FILE) $(HEX_FILE) $(BIN_FILE) $(DIS_FILE)
 
-# # Set VPATH for source directories
-# EMPTY:=
-# SPACE:= $(EMPTY) $(EMPTY)
-# VPATH = $(subst $(SPACE),:,$(strip $(SOURCE_DIR)))
+help:
+	@$(ECHO)
+	@$(ECHO) 'make                    - build project'
+	@$(ECHO) '    verbose=<true>      - optional, default is false'
+	@$(ECHO)
+	@$(ECHO) 'make clean              - clean obj & output files'
+	@$(ECHO)
+	@$(ECHO) 'make rebuild            - clean & make'
+	@$(ECHO)
+	@$(ECHO) 'make help               - this menu'
+	@$(ECHO)
 
+$(OBJECT_DIR)/%$(OBJ_FILE_EXT): %$(SRC_FILE_EXT_C)
+	@    $(ECHO) "(CC) " $@
+	@    mkdir -p $(dir $@)
+	$(Q) $(CC) $(INCLUDE_DIRS) $(CPPFLAGS) $(CFLAGS) -o $@ $<
 
-# $(info $(DIRS))
+$(OBJECT_DIR)/%$(OBJ_FILE_EXT): %$(SRC_FILE_EXT_CPP)
+	@    $(ECHO) "(CXX)" $@
+	@    mkdir -p $(dir $@)
+	$(Q) $(CXX) $(INCLUDE_DIRS) $(CPPFLAGS) $(CXXFLAGS) -o $@ $<
 
-vpath %.c $(DIRS)
-vpath %.cpp $(DIRS)
-vpath %.h $(DIRS)
-vpath %.asm $(DIRS)
+%$(ELF_FILE_EXT): $(OBJS) $(MCU_LD)
+	@    $(ECHO) "\n(LINK)" $@ "\n"
+	@    mkdir -p $(dir $@)
+	$(Q) $(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
+	$(Q) $(SIZE) $@
 
+%$(HEX_FILE_EXT): %$(ELF_FILE_EXT)
+	@    $(ECHO) "\n(HEX) " $@
+	@    mkdir -p $(dir $@)
+	$(Q) $(OBJCOPY) $(HEX_FLAGS) $< $@
 
-# the actual makefile rules (all .o files built by GNU make's default implicit rules)
+%$(BIN_FILE_EXT): %$(ELF_FILE_EXT) %$(HEX_FILE_EXT)
+	@    $(ECHO) "\n(BIN) " $@
+	@    mkdir -p $(dir $@)
+	$(Q) $(OBJCOPY) $(BIN_FLAGS) $< $@
 
-all: $(TARGET).hex
-
-$(TARGET).elf: $(OBJS) $(MCU_LD)
-	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
-
-%.o: %.c
-	$(CC) $(INCLUDE_DIRS) $(CPPFLAGS) $(CFLAGS) -c $<
-
-%.o: %.cpp
-	$(CXX) $(INCLUDE_DIRS) $(CPPFLAGS) $(CXXFLAGS) -c $<
-
-%.hex: %.elf
-	$(SIZE) $<
-	$(OBJCOPY) -O ihex -R .eeprom $< $@
-ifneq (,$(wildcard $(TOOLSPATH)))
-	$(TOOLSPATH)/teensy_post_compile -file=$(basename $@) -path=$(shell pwd) -tools=$(TOOLSPATH)
-	-$(TOOLSPATH)/teensy_reboot
-endif
-
-# compiler generated dependency info
--include $(OBJS:.o=.d)
+%$(DIS_FILE_EXT): %$(ELF_FILE_EXT) %$(BIN_FILE_EXT)
+	@    $(ECHO) "\n(DIS) " $@ "\n"
+	@    mkdir -p $(dir $@)
+	$(Q) $(OBJDUMP) $(DIS_FLAGS) $< > $@
 
 clean:
-	rm -f *.o *.d $(TARGET).elf $(TARGET).hex
+	$(RM) $(OBJECT_DIR)
+	$(RM) $(OUTPUT_DIR)
+
+rebuild: clean
+	@$(MAKE) -s all
+
+-include $(OBJS:.o=.d) # compiler generated dependency info
