@@ -2,7 +2,7 @@
 
 MAKEFLAGS += -rR						# do not use make's built-in rules and variables
 MAKEFLAGS += -j8						# parallel processing
-MAKEFLAGS += --output-sync=target		# group output messages per target
+# MAKEFLAGS += --output-sync=target		# group output messages per target
 MAKEFLAGS += --warn-undefined-variables
 
 SHELL = bash
@@ -62,11 +62,12 @@ CPUARCH := $(strip $(CPUARCH))
 
 ################################################################################
 
-CC      = arm-none-eabi-gcc
-CXX     = arm-none-eabi-g++
-OBJCOPY = arm-none-eabi-objcopy
-OBJDUMP = arm-none-eabi-objdump
-SIZE    = arm-none-eabi-size
+CC       = arm-none-eabi-gcc
+CXX      = arm-none-eabi-g++
+OBJCOPY  = arm-none-eabi-objcopy
+OBJDUMP  = arm-none-eabi-objdump
+SIZE     = arm-none-eabi-size
+UPLOADER = teensy_loader_cli
 
 DEFINES  = -DF_CPU=48000000
 DEFINES += -DUSB_SERIAL
@@ -114,6 +115,10 @@ BIN_FLAGS += -R .eeprom
 
 DIS_FLAGS  = --all
 
+UPLOAD_FLAGS  = --mcu=$(MCU)
+UPLOAD_FLAGS += -w
+UPLOAD_FLAGS += -v
+
 ################################################################################
 
 C_SRCS			:=	$(foreach dir, $(SOURCE_DIRS),		\
@@ -138,7 +143,7 @@ vpath %$(HDR_FILE_EXT)     $(DIRS)
 
 ################################################################################
 
-.PHONY: all help clean rebuild
+.PHONY: all help clean rebuild upload
 .SECONDARY: $(OBJS)
 
 all: $(ELF_FILE) $(HEX_FILE) $(BIN_FILE) $(DIS_FILE)
@@ -151,6 +156,8 @@ help:
 	@$(ECHO) 'make clean              - clean obj & output files'
 	@$(ECHO)
 	@$(ECHO) 'make rebuild            - clean & make'
+	@$(ECHO)
+	@$(ECHO) 'make upload             - upload hex file to teensy board'
 	@$(ECHO)
 	@$(ECHO) 'make help               - this menu'
 	@$(ECHO)
@@ -165,7 +172,7 @@ $(OBJECT_DIR)/%$(OBJ_FILE_EXT): %$(SRC_FILE_EXT_CPP)
 	@    mkdir -p $(dir $@)
 	$(Q) $(CXX) $(INCLUDE_DIRS) $(CPPFLAGS) $(CXXFLAGS) -o $@ $<
 
-%$(ELF_FILE_EXT): $(OBJS) $(MCU_LD)
+$(ELF_FILE): $(OBJS) $(MCU_LD)
 	@    $(ECHO) "\n(LINK)" $@ "\n"
 	@    mkdir -p $(dir $@)
 	$(Q) $(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
@@ -192,5 +199,8 @@ clean:
 
 rebuild: clean
 	@$(MAKE) -s all
+
+upload: $(HEX_FILE)
+	$(UPLOADER) $(UPLOAD_FLAGS) $<
 
 -include $(OBJS:.o=.d) # compiler generated dependency info
