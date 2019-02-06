@@ -1,58 +1,57 @@
-/* Teensyduino Core Library
- * http://www.pjrc.com/teensy/
- * Copyright (c) 2017 PJRC.COM, LLC.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * 1. The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * 2. If the Software is incorporated into a build system that allows
- * selection among a list of target devices, then similar target
- * devices manufactured by PJRC.COM must be included in the list of
- * target devices and selectable in the same manner.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ /**
+ * @file
+ * @brief Main for blinky
  */
 
-#include <Arduino.h>
+/******************************************************************************
+ * Includes
+ ******************************************************************************/
+/* c standard includes */
+#include <stdint.h>
 
-extern "C" int main(void)
+#include "Arduino.h"
+
+/******************************************************************************
+ * Declarations & Definitions
+ ******************************************************************************/
+/* data types */
+typedef struct
 {
-#ifdef USING_MAKEFILE
+    const int led_pin;
+    const int on_delay_ms;
+    const int off_delay_ms;
+} blinky_cfg_t;
 
-	// To use Teensy 3.0 without Arduino, simply put your code here.
-	// For example:
+/* static variables */
+static const blinky_cfg_t cfg =
+{
+    .led_pin      = 13,
+    .on_delay_ms  = 150,
+    .off_delay_ms = 300,
+};
 
-	pinMode(13, OUTPUT);
-	while (1) {
-		digitalWriteFast(13, HIGH);
-		delay(100);
-		digitalWriteFast(13, LOW);
-		delay(500);
-	}
+/* private function prototypes */
+static void init();
 
+/******************************************************************************
+ * Procedures
+ ******************************************************************************/
+/* public functions */
+int main(void)
+{
+    init();
 
-#else
-	// Arduino's main() function just calls setup() and loop()....
-	setup();
-	while (1) {
-		loop();
-		yield();
-	}
-#endif
+    while(true)
+    {
+        digitalWriteFast(cfg.led_pin, HIGH);
+        delay(cfg.on_delay_ms);
+        digitalWriteFast(cfg.led_pin, LOW);
+        delay(cfg.off_delay_ms);
+    }
 }
 
+/* private functions */
+static void init()
+{
+    pinMode(cfg.led_pin, OUTPUT);
+}
