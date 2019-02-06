@@ -15,5 +15,5 @@
     - There is a bug that causes linker errors
 
 #### Versions that were used
-- teensy-loader-cli: 2.1-1
-- arm-none-eabi-gcc: 7.3.1 20180622
+- `teensy-loader-cli`: 2.1-1
+- `arm-none-eabi-gcc`: 7.3.1 20180622
