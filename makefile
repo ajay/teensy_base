@@ -89,13 +89,15 @@ CPPFLAGS += -c					# compile and assemble, do not link
 CPPFLAGS += $(DEFINES)
 
 # compiler options for C only
-CFLAGS = -std=c11
+CFLAGS  = -std=c11
+CFLAGS += -x c
 
 # compiler options for C++ only
 CXXFLAGS  = -std=gnu++14
 CXXFLAGS += -felide-constructors
 CXXFLAGS += -fno-exceptions
 CXXFLAGS += -fno-rtti
+CXXFLAGS += -x c++
 
 LDFLAGS  = -Os
 LDFLAGS += -Wl,--gc-sections,--defsym=__rtc_localtime=0,-Map=$(MAP_FILE)
