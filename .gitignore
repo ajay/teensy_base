@@ -1,9 +1,2 @@
-*.o
-*.d
-*.elf
-*.map
-*.hex
-*.bin
-*.dis
 out/
 obj/

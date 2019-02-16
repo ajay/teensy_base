@@ -48,9 +48,7 @@ HEX_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME).hex
 BIN_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME).bin
 DIS_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME).dis
 
-LINKER_FILE_PATH :=	$(sort							\
-					$(foreach dir, $(SOURCE_DIR),	\
-					$(shell find -L $(dir) -type f -name '*.ld' -printf '%h\n')))
+LINKER_FILE_PATH :=	$(sort $(shell find -L $(SOURCE_DIR) -type f -name '*.ld' -printf '%h\n'))
 
 MCU    := $(strip $(MCU))
 MCU_LD  = $(LINKER_FILE_PATH)/$(shell echo $(MCU) | tr A-Z a-z).ld
@@ -130,7 +128,7 @@ OBJS			:=	$(sort								\
 					$(addsuffix .o,						\
 					$(basename							\
 					$(foreach ext, $(SRC_FILE_EXTS),	\
-					$(shell test -d $(dir) && find $(SOURCE_DIR) -type f -name *$(ext) -printf '%P\n'))))))
+					$(shell test -d $(SOURCE_DIR) && find $(SOURCE_DIR) -type f -name *$(ext) -printf '%P\n'))))))
 
 ################################################################################
 
