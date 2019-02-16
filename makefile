@@ -1,13 +1,16 @@
 ################################################################################
 
+SHELL = bash
+
+NUM_CPU = $(shell nproc --all)
+
 MAKEFLAGS += -rR						# do not use make's built-in rules and variables
-MAKEFLAGS += -j8						# parallel processing
-# MAKEFLAGS += --output-sync=target		# group output messages per target
+MAKEFLAGS += -j$(NUM_CPU)				# parallel processing
+MAKEFLAGS += -k							# keep going
 MAKEFLAGS += --warn-undefined-variables
 
-SHELL = bash
-ECHO  = echo -e
-RM    = rm -rf
+ECHO = echo -e
+RM   = rm -rf
 
 ifeq ("$(origin verbose)", "command line")
 	Q =
@@ -17,47 +20,41 @@ endif
 
 ################################################################################
 
-PROJECT_NAME = test
-# PROJECT_NAME = $(notdir $(CURDIR))
+PROJECT_NAME = $(notdir $(CURDIR))
 
 $(info )
 $(info PROJECT=$(PROJECT_NAME))
 $(info )
 
-SOURCE_DIRS = lib src
-OBJECT_DIR  = obj
-OUTPUT_DIR  = out
+SOURCE_DIR = src
+OBJECT_DIR = obj
+OUTPUT_DIR = out
 
-LINKER_FILE_PATH = lib/linker
-
-SRC_FILE_EXT_C   = .c
-SRC_FILE_EXT_CPP = .cpp
-HDR_FILE_EXT     = .h
-OBJ_FILE_EXT     = .o
-DEP_FILE_EXT     = .d
-ELF_FILE_EXT     = .elf
-MAP_FILE_EXT     = .map
-HEX_FILE_EXT     = .hex
-BIN_FILE_EXT     = .bin
-DIS_FILE_EXT     = .dis
-LINK_FILE_EXT    = .ld
-
-ELF_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME)$(ELF_FILE_EXT)
-MAP_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME)$(MAP_FILE_EXT)
-HEX_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME)$(HEX_FILE_EXT)
-BIN_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME)$(BIN_FILE_EXT)
-DIS_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME)$(DIS_FILE_EXT)
+SRC_FILE_EXTS    = .asm .c .cpp
 
 MCU = MK20DX256		# Teensy 3.1/3.2
 # MCU = MKL26Z64	# Teensy LC
 # MCU = MK64FX512	# Teensy 3.5
 # MCU = MK66FX1M0 	# Teensy 3.6
 
-MCU    := $(strip $(MCU))
-MCU_LD  = $(LINKER_FILE_PATH)/$(shell echo $(MCU) | tr A-Z a-z)$(LINK_FILE_EXT)
-
 CPUARCH  = cortex-m4		# Teensy 3.x
 # CPUARCH = cortex-m0plus	# Teensy LC
+
+################################################################################
+
+ELF_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME).elf
+MAP_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME).map
+HEX_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME).hex
+BIN_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME).bin
+DIS_FILE = $(OUTPUT_DIR)/$(PROJECT_NAME).dis
+
+LINKER_FILE_PATH :=	$(sort							\
+					$(foreach dir, $(SOURCE_DIR),	\
+					$(shell find -L $(dir) -type f -name '*.ld' -printf '%h\n')))
+
+MCU    := $(strip $(MCU))
+MCU_LD  = $(LINKER_FILE_PATH)/$(shell echo $(MCU) | tr A-Z a-z).ld
+
 CPUARCH := $(strip $(CPUARCH))
 
 ################################################################################
@@ -87,6 +84,7 @@ CPPFLAGS += -mthumb
 CPPFLAGS += -MMD				# generate dependency file
 CPPFLAGS += -c					# compile and assemble, do not link
 CPPFLAGS += $(DEFINES)
+CPPFLAGS += $(INCLUDE_DIRS)
 
 # compiler options for C only
 CFLAGS  = -std=c11
@@ -120,28 +118,19 @@ DIS_FLAGS  = --all
 UPLOAD_FLAGS  = --mcu=$(MCU)
 UPLOAD_FLAGS += -w
 UPLOAD_FLAGS += -v
+UPLOAD_FLAGS += -s
 
 ################################################################################
 
-C_SRCS			:=	$(foreach dir, $(SOURCE_DIRS),		\
-					$(foreach ext, $(SRC_FILE_EXT_C), 	\
-					$(shell test -d $(dir) && find $(dir) -type f -name *$(ext))))
+INCLUDE_DIRS	:=	$(addprefix -I,						\
+					$(sort $(shell find -L $(SOURCE_DIR) -type d))))
 
-CXX_SRCS		:=	$(foreach dir, $(SOURCE_DIRS),		\
-					$(foreach ext, $(SRC_FILE_EXT_CPP), \
-					$(shell test -d $(dir) && find $(dir) -type f -name *$(ext))))
-
-DIRS 			:=	$(foreach dir, $(SOURCE_DIRS),		\
-					$(sort $(shell find -L $(dir) -type d)))
-
-INCLUDE_DIRS	:=	$(addprefix -I, $(DIRS))
-
-OBJS 			:=	$(addprefix $(OBJECT_DIR)/, 		\
-					$(C_SRCS:.c=.o) $(CXX_SRCS:.cpp=.o))
-
-vpath %$(SRC_FILE_EXT_C)   $(DIRS)
-vpath %$(SRC_FILE_EXT_CPP) $(DIRS)
-vpath %$(HDR_FILE_EXT)     $(DIRS)
+OBJS			:=	$(sort								\
+					$(addprefix $(OBJECT_DIR)/,			\
+					$(addsuffix .o,						\
+					$(basename							\
+					$(foreach ext, $(SRC_FILE_EXTS),	\
+					$(shell test -d $(dir) && find $(SOURCE_DIR) -type f -name *$(ext) -printf '%P\n')))))))
 
 ################################################################################
 
@@ -164,45 +153,58 @@ help:
 	@$(ECHO) 'make help               - this menu'
 	@$(ECHO)
 
-$(OBJECT_DIR)/%$(OBJ_FILE_EXT): %$(SRC_FILE_EXT_C)
-	@    $(ECHO) "(CC) " $@
-	@    mkdir -p $(dir $@)
-	$(Q) $(CC) $(INCLUDE_DIRS) $(CPPFLAGS) $(CFLAGS) -o $@ $<
 
-$(OBJECT_DIR)/%$(OBJ_FILE_EXT): %$(SRC_FILE_EXT_CPP)
-	@    $(ECHO) "(CXX)" $@
-	@    mkdir -p $(dir $@)
-	$(Q) $(CXX) $(INCLUDE_DIRS) $(CPPFLAGS) $(CXXFLAGS) -o $@ $<
+
+$(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.asm
+	@    $(ECHO) "(ASM)" $<
+	@    mkdir -p $(@D)
+	$(Q) $(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $<
+
+$(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.c
+	@    $(ECHO) "(CC) " $<
+	@    mkdir -p $(@D)
+	$(Q) $(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $<
+
+$(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.cpp
+	@    $(ECHO) "(CXX)" $<
+	@    mkdir -p $(@D)
+	$(Q) $(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $<
 
 $(ELF_FILE): $(OBJS) $(MCU_LD)
 	@    $(ECHO) "\n(LINK)" $@ "\n"
-	@    mkdir -p $(dir $@)
+	@    mkdir -p $(@D)
 	$(Q) $(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
 	$(Q) $(SIZE) $@
+	@    $(ECHO)
 
-%$(HEX_FILE_EXT): %$(ELF_FILE_EXT)
-	@    $(ECHO) "\n(HEX) " $@
-	@    mkdir -p $(dir $@)
+
+
+%.hex: %.elf
+	@    $(ECHO) "(HEX) " $@
 	$(Q) $(OBJCOPY) $(HEX_FLAGS) $< $@
 
-%$(BIN_FILE_EXT): %$(ELF_FILE_EXT) %$(HEX_FILE_EXT)
-	@    $(ECHO) "\n(BIN) " $@
-	@    mkdir -p $(dir $@)
+%.bin: %.elf
+	@    $(ECHO) "(BIN) " $@
 	$(Q) $(OBJCOPY) $(BIN_FLAGS) $< $@
 
-%$(DIS_FILE_EXT): %$(ELF_FILE_EXT) %$(BIN_FILE_EXT)
-	@    $(ECHO) "\n(DIS) " $@ "\n"
-	@    mkdir -p $(dir $@)
+%.dis: %.elf
+	@    $(ECHO) "(DIS) " $@
 	$(Q) $(OBJDUMP) $(DIS_FLAGS) $< > $@
 
+
+
 clean:
-	$(RM) $(OBJECT_DIR)
-	$(RM) $(OUTPUT_DIR)
+	$(RM) $(OUTPUT_DIR) $(OBJECT_DIR)
+	@     $(ECHO) 'Finished clean\n'
 
 rebuild: clean
 	@$(MAKE) -s all
 
-upload: $(HEX_FILE)
-	$(UPLOADER) $(UPLOAD_FLAGS) $<
+
+
+upload: all
+	$(Q) $(UPLOADER) $(UPLOAD_FLAGS) $(HEX_FILE)
+
+
 
 -include $(OBJS:.o=.d) # compiler generated dependency info

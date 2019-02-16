@@ -15,11 +15,9 @@
 /******************************************************************************
  * Procedures
  ******************************************************************************/
-BlinkingLED::BlinkingLED(int pin, int on_delay_ms, int off_delay_ms)
+BlinkingLED::BlinkingLED(int pin)
 {
     this->pin           = pin;
-    this->on_delay_ms   = on_delay_ms;
-    this->off_delay_ms  = off_delay_ms;
     this->led_is_on     = false;
     this->previous_time = millis();
 
@@ -29,7 +27,7 @@ BlinkingLED::BlinkingLED(int pin, int on_delay_ms, int off_delay_ms)
 
 void BlinkingLED::update(void)
 {
-    unsigned int threshold = (this->led_is_on) ? this->on_delay_ms : this->off_delay_ms;
+    unsigned int threshold = this->period_ms * ((this->led_is_on) ? this->duty_cycle : (1 - this->duty_cycle));
     unsigned int time_diff = millis() - previous_time;
 
     if(time_diff > threshold)
@@ -38,4 +36,18 @@ void BlinkingLED::update(void)
         this->previous_time = millis();
         this->led_is_on = !this->led_is_on;
     }
+}
+
+/**
+ * @brief Set duty cycle
+ * @param duty_cycle Duty cycle to set, from 0 to 1
+ */
+void BlinkingLED::set_duty_cycle(float duty_cycle)
+{
+    this->duty_cycle = (duty_cycle > 1) ? 1 : ((duty_cycle < 0) ? 0 : duty_cycle);
+}
+
+void BlinkingLED::set_period_ms(unsigned long period_ms)
+{
+    this->period_ms = period_ms;
 }

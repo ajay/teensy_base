@@ -14,6 +14,11 @@
 - Note: do not use this package from Ubuntu 18.04 PPA: `gcc-arm-none-eabi`
     - There is a bug that causes linker errors
 
+- In order for serial comm to work properly:
+    - Get udev rules from here: https://www.pjrc.com/teensy/49-teensy.rules
+    - Copy udev rules to `/etc/udev/rules.d/`:
+        `sudo cp 49-teensy.rules /etc/udev/rules.d/`
+
 #### Versions that were used
 - `teensy-loader-cli`: 2.1-1
 - `arm-none-eabi-gcc`: 7.3.1 20180622
