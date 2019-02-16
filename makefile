@@ -123,14 +123,14 @@ UPLOAD_FLAGS += -s
 ################################################################################
 
 INCLUDE_DIRS	:=	$(addprefix -I,						\
-					$(sort $(shell find -L $(SOURCE_DIR) -type d))))
+					$(sort $(shell find -L $(SOURCE_DIR) -type d)))
 
 OBJS			:=	$(sort								\
 					$(addprefix $(OBJECT_DIR)/,			\
 					$(addsuffix .o,						\
 					$(basename							\
 					$(foreach ext, $(SRC_FILE_EXTS),	\
-					$(shell test -d $(dir) && find $(SOURCE_DIR) -type f -name *$(ext) -printf '%P\n')))))))
+					$(shell test -d $(dir) && find $(SOURCE_DIR) -type f -name *$(ext) -printf '%P\n'))))))
 
 ################################################################################
 
