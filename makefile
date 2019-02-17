@@ -30,14 +30,14 @@ SOURCE_DIR = src
 OBJECT_DIR = obj
 OUTPUT_DIR = out
 
-SRC_FILE_EXTS    = .asm .c .cpp
+SRC_FILE_EXTS = .asm .c .cpp
 
 MCU = MK20DX256		# Teensy 3.1/3.2
 # MCU = MKL26Z64	# Teensy LC
 # MCU = MK64FX512	# Teensy 3.5
-# MCU = MK66FX1M0 	# Teensy 3.6
+# MCU = MK66FX1M0	# Teensy 3.6
 
-CPUARCH  = cortex-m4		# Teensy 3.x
+CPUARCH = cortex-m4			# Teensy 3.x
 # CPUARCH = cortex-m0plus	# Teensy LC
 
 ################################################################################
@@ -62,7 +62,6 @@ CXX      = arm-none-eabi-g++
 OBJCOPY  = arm-none-eabi-objcopy
 OBJDUMP  = arm-none-eabi-objdump
 SIZE     = arm-none-eabi-size
-UPLOADER = teensy_loader_cli
 
 DEFINES  = -DF_CPU=48000000
 DEFINES += -DUSB_SERIAL
@@ -113,10 +112,26 @@ BIN_FLAGS += -R .eeprom
 
 DIS_FLAGS  = --all
 
+################################################################################
+
+UPLOADER = teensy_loader_cli
+
 UPLOAD_FLAGS  = --mcu=$(MCU)
-UPLOAD_FLAGS += -w
-UPLOAD_FLAGS += -v
-UPLOAD_FLAGS += -s
+UPLOAD_FLAGS += -w				# wait for device
+UPLOAD_FLAGS += -v				# verbose
+UPLOAD_FLAGS += -s				# send soft reboot command
+
+################################################################################
+
+PICOCOM = picocom
+
+dev  ?= /dev/ttyACMO
+baud ?= 115200
+
+PICOCOM_FLAGS  = --baud $(baud)
+PICOCOM_FLAGS += --echo
+PICOCOM_FLAGS += --omap crlf
+PICOCOM_FLAGS += --emap crlf
 
 ################################################################################
 
@@ -132,7 +147,7 @@ OBJS			:=	$(sort								\
 
 ################################################################################
 
-.PHONY: all help clean rebuild upload
+.PHONY: all help clean rebuild upload serial
 .SECONDARY: $(OBJS)
 
 all: $(ELF_FILE) $(HEX_FILE) $(BIN_FILE) $(DIS_FILE)
@@ -142,11 +157,15 @@ help:
 	@$(ECHO) 'make                    - build project'
 	@$(ECHO) '    verbose=<true>      - optional, default is false'
 	@$(ECHO)
-	@$(ECHO) 'make clean              - clean obj & output files'
+	@$(ECHO) 'make upload             - upload hex file to teensy board'
+	@$(ECHO)
+	@$(ECHO) 'make serial             - start picocom to communicate with teensy'
+	@$(ECHO) '    dev=<device>        - optional, default is /dev/ttyACM0'
+	@$(ECHO) '    baud=<baud>         - optional, default is 115200'
+	@$(ECHO)
+	@$(ECHO) 'make clean              - clean object & output files'
 	@$(ECHO)
 	@$(ECHO) 'make rebuild            - clean & make'
-	@$(ECHO)
-	@$(ECHO) 'make upload             - upload hex file to teensy board'
 	@$(ECHO)
 	@$(ECHO) 'make help               - this menu'
 	@$(ECHO)
@@ -191,17 +210,20 @@ $(ELF_FILE): $(OBJS) $(MCU_LD)
 
 
 
+upload: all
+	$(Q) $(UPLOADER) $(UPLOAD_FLAGS) $(HEX_FILE)
+
+serial:
+	$(PICOCOM) /dev/ttyACM0 $(PICOCOM_FLAGS)
+
+
+
 clean:
 	$(RM) $(OUTPUT_DIR) $(OBJECT_DIR)
 	@     $(ECHO) 'Finished clean\n'
 
 rebuild: clean
-	@$(MAKE) -s all
-
-
-
-upload: all
-	$(Q) $(UPLOADER) $(UPLOAD_FLAGS) $(HEX_FILE)
+	$(Q) $(MAKE) -s all
 
 
 
