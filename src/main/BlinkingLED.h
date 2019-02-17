@@ -9,11 +9,19 @@
 /******************************************************************************
  * Declarations & Definitions
  ******************************************************************************/
+/* data types */
+typedef struct
+{
+    unsigned int  pin;
+    unsigned long period_ms;
+    float         duty_cycle;
+} blinking_led_init_t;
+
 /* classes */
 class BlinkingLED
 {
     public:
-        BlinkingLED(int pin);
+        BlinkingLED(const blinking_led_init_t init);
         void set_duty_cycle(float duty_cycle);
         void set_period_ms(unsigned long period_ms);
         void update(void);

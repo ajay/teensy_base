@@ -6,10 +6,8 @@
 /******************************************************************************
  * Includes
  ******************************************************************************/
-/* c standard includes */
 #include <stdint.h>
 
-/* arduino */
 #include "Arduino.h"
 
 #include "BlinkingLED.h"
@@ -18,7 +16,12 @@
  * Declarations & Definitions
  ******************************************************************************/
 /* static variables */
-static BlinkingLED bled(13);
+static BlinkingLED onboard_led(
+{
+    .pin        = 13,
+    .period_ms  = 1000,
+    .duty_cycle = 0.5,
+});
 
 /* private function prototypes */
 static void init(void);
@@ -36,7 +39,7 @@ int main(void)
 
     while(true)
     {
-        bled.update();
+        onboard_led.update();
         send_msg(1000);
         echo();
     }
@@ -45,13 +48,9 @@ int main(void)
 /* private functions */
 static void init(void)
 {
-    Serial.begin(115200); // USB is always 12 Mbit/sec
+    Serial.begin(115200);
 
-    // for debug only
-    while(!Serial);
-
-    bled.set_duty_cycle(0.05);
-    bled.set_period_ms(1000);
+    while(!Serial); // for debug only
 }
 
 static void send_msg(unsigned long delay_ms)

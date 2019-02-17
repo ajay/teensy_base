@@ -6,10 +6,8 @@
 /******************************************************************************
  * Includes
  ******************************************************************************/
-/* class */
 #include "BlinkingLED.h"
 
-/* arduino */
 #include "Arduino.h"
 
 /******************************************************************************
@@ -19,9 +17,12 @@
  * @brief Constructs the BlinkingLED object
  * @param pin The pin the LED is connected to
  */
-BlinkingLED::BlinkingLED(int pin)
+BlinkingLED::BlinkingLED(const blinking_led_init_t init)
 {
-    this->pin           = pin;
+    this->pin = init.pin;
+    this->set_duty_cycle(init.duty_cycle);
+    this->set_period_ms(init.period_ms);
+
     this->led_is_on     = false;
     this->previous_time = millis();
 
