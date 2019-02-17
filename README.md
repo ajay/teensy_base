@@ -3,8 +3,8 @@
 ## Installation / Environment
 
 #### Dependencies:
-- `teensy-loader-cli`
 - `arm-none-eabi-gcc`
+- `teensy-loader-cli`
 
 #### Installation
 - `sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa`
@@ -20,5 +20,5 @@
         `sudo cp 49-teensy.rules /etc/udev/rules.d/`
 
 #### Versions that were used
-- `teensy-loader-cli`: 2.1-1
 - `arm-none-eabi-gcc`: 7.3.1 20180622
+- `teensy-loader-cli`: 2.1-1

@@ -3,6 +3,9 @@
  * @brief BlinkingLED class header
  */
 
+#ifndef _BLINKINGLED_H_
+#define _BLINKINGLED_H_
+
 /******************************************************************************
  * Declarations & Definitions
  ******************************************************************************/
@@ -22,3 +25,5 @@ class BlinkingLED
         unsigned long previous_time;
         bool          led_is_on;
 };
+
+#endif /* _BLINKINGLED_H_ */
