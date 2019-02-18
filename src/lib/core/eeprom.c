@@ -10,10 +10,10 @@
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
  *
- * 1. The above copyright notice and this permission notice shall be 
+ * 1. The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
  *
- * 2. If the Software is incorporated into a build system that allows 
+ * 2. If the Software is incorporated into a build system that allows
  * selection among a list of target devices, then similar target
  * devices manufactured by PJRC.COM must be included in the list of
  * target devices and selectable in the same manner.
@@ -37,7 +37,7 @@
 // know what you're doing.
 
 #include "kinetis.h"
-#include <avr/eeprom.h>
+#include <eeprom.h>
 //#include "HardwareSerial.h"
 #if F_CPU > 120000000 && defined(__MK66FX1M0__)
 #include "core_pins.h"	// delayMicroseconds()
@@ -176,7 +176,7 @@ void eeprom_read_block(void *buf, const void *addr, uint32_t len)
 	uint32_t offset = (uint32_t)addr;
 	uint8_t *dest = (uint8_t *)buf;
 	uint32_t end = offset + len;
-	
+
 	if (!(FTFL_FCNFG & FTFL_FCNFG_EEERDY)) eeprom_initialize();
 	if (end > EEPROM_SIZE) end = EEPROM_SIZE;
 	while (offset < end) {
