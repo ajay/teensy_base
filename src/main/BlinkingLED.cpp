@@ -15,13 +15,11 @@
  ******************************************************************************/
 /**
  * @brief Constructs the BlinkingLED object
- * @param pin The pin the LED is connected to
+ * @param init Structure containing members to initialize the class with
  */
-BlinkingLED::BlinkingLED(const blinking_led_init_t init)
+BlinkingLED::BlinkingLED(const blinking_led_init_t init) : pin(init.pin), period_ms(init.period_ms)
 {
-    this->pin = init.pin;
-    this->set_duty_cycle(init.duty_cycle);
-    this->set_period_ms(init.period_ms);
+    this->set_duty_cycle(duty_cycle);
 
     this->led_is_on     = false;
     this->previous_time = millis();
